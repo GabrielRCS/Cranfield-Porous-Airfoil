@@ -1,0 +1,4 @@
+/home/gabriel/palabos/airfoil/main/build/CMakeFiles/palabos.dir
+/home/gabriel/palabos/airfoil/main/build/CMakeFiles/airfoil.dir
+/home/gabriel/palabos/airfoil/main/build/CMakeFiles/edit_cache.dir
+/home/gabriel/palabos/airfoil/main/build/CMakeFiles/rebuild_cache.dir

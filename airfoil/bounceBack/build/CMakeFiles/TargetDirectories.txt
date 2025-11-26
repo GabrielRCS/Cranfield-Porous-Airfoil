@@ -1,4 +1,0 @@
-/home/gabriel/palabos/airfoil/bounceBack/build/CMakeFiles/palabos.dir
-/home/gabriel/palabos/airfoil/bounceBack/build/CMakeFiles/computeDrag.dir
-/home/gabriel/palabos/airfoil/bounceBack/build/CMakeFiles/edit_cache.dir
-/home/gabriel/palabos/airfoil/bounceBack/build/CMakeFiles/rebuild_cache.dir
