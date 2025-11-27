@@ -181,19 +181,19 @@ void writeVTK(MultiBlockLattice2D<T, DESCRIPTOR> &lattice, IncomprFlowParam<T> c
 
 }
 
-void writeHDF5(MultiBlockLattice2D<T, DESCRIPTOR> &lattice, IncomprFlowParam<T> const &parameters, plint iter)
-{
+// void writeHDF5(MultiBlockLattice2D<T, DESCRIPTOR> &lattice, IncomprFlowParam<T> const &parameters, plint iter)
+// {
     
-#ifdef HDF5
-    ParallelXdmfDataWriter2D xdmfOut("NACA0012");
-#endif
+// #ifdef HDF5
+//     ParallelXdmfDataWriter2D xdmfOut("NACA0012");
+// #endif
     
-#ifdef HDF5
-    xdmfOut.writeDataField<T>(*computeVelocity(lattice), "velocity");
-#endif  
+// #ifdef HDF5
+//     xdmfOut.writeDataField<T>(*computeVelocity(lattice), "velocity");
+// #endif  
 
 
-}
+// }
 
 int main(int argc, char *argv[])
 {
@@ -273,8 +273,8 @@ int main(int argc, char *argv[])
             // Computation of lift and drag 
             ofileDrag << setprecision(10) << lattice.getInternalStatistics().getSum(forceIds[0]) << endl;
             ofileLift << setprecision(10) << lattice.getInternalStatistics().getSum(forceIds[1]) << endl;
-            pcout << "Saving HDF5 file ..." << endl;
-            writeHDF5(lattice, parameters, iT);
+            //pcout << "Saving HDF5 file ..." << endl;
+            //writeHDF5(lattice, parameters, iT);
             
 
         }
