@@ -374,6 +374,40 @@ BlockDomain::DomainT BoxDensityFunctional2D<T, Descriptor>::appliesTo() const
     return BlockDomain::bulk;
 }
 
+////// Attempt at implementing pressure calculation functionals //////
+template <typename T, template <typename U> class Descriptor>
+void BoxPressureFunctional2D<T, Descriptor>::process(
+    Box2D domain, BlockLattice2D<T, Descriptor> &lattice, ScalarField2D<T> &scalarField)
+{
+    Dot2D offset = computeRelativeDisplacement(lattice, scalarField);
+    for (plint iX = domain.x0; iX <= domain.x1; ++iX) {
+        for (plint iY = domain.y0; iY <= domain.y1; ++iY) {
+            scalarField.get(iX + offset.x, iY + offset.y) = lattice.get(iX, iY).computePressure();
+        }
+    }
+}
+
+template <typename T, template <typename U> class Descriptor>
+BoxPressureFunctional2D<T, Descriptor> *BoxPressureFunctional2D<T, Descriptor>::clone() const
+{
+    return new BoxPressureFunctional2D<T, Descriptor>(*this);
+}
+
+template <typename T, template <typename U> class Descriptor>
+void BoxPressureFunctional2D<T, Descriptor>::getTypeOfModification(
+    std::vector<modif::ModifT> &modified) const
+{
+    modified[0] = modif::nothing;
+    modified[1] = modif::staticVariables;
+}
+
+template <typename T, template <typename U> class Descriptor>
+BlockDomain::DomainT BoxPressureFunctional2D<T, Descriptor>::appliesTo() const
+{
+    return BlockDomain::bulk;
+}
+////////////////////////////////////////////////////////////////////////
+
 template <typename T, template <typename U> class Descriptor>
 void BoxRhoBarFunctional2D<T, Descriptor>::process(
     Box2D domain, BlockLattice2D<T, Descriptor> &lattice, ScalarField2D<T> &scalarField)

@@ -94,6 +94,13 @@ void computeDensity(BlockLattice2D<T, Descriptor> &lattice, ScalarField2D<T> &de
 template <typename T, template <typename U> class Descriptor>
 std::unique_ptr<ScalarField2D<T> > computeDensity(BlockLattice2D<T, Descriptor> &lattice);
 
+/* ************** Pressure ******************************************* */
+template <typename T, template <typename U> class Descriptor>
+void computePressure(BlockLattice2D<T, Descriptor> &lattice, ScalarField2D<T> &pressure);
+
+template <typename T, template <typename U> class Descriptor>
+std::unique_ptr<ScalarField2D<T> > computePressure(BlockLattice2D<T, Descriptor> &lattice);
+
 /* *************** RhoBar ******************************************** */
 
 template <typename T, template <typename U> class Descriptor>
