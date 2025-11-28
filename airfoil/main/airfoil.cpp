@@ -105,7 +105,7 @@ private:
 
 /// A functional, used to instantiate bounce-back nodes at the locations of the cylinder
 void defineGeometry(
-    MultiBlockLattice2D<T, DESCRIPTOR> &lattice, ComprFlowParam<T> const &parameters,
+    MultiBlockLattice2D<T, DESCRIPTOR> &lattice, IncomprFlowParam<T> const &parameters,
     OnLatticeBoundaryCondition2D<T, DESCRIPTOR> &boundaryCondition, Array<plint, 2> forceIds)
 {
     const plint nx = parameters.getNx();
@@ -166,7 +166,7 @@ void writeGifs(MultiBlockLattice2D<T, DESCRIPTOR> &lattice, plint iter)
         createFileName("u", iter, 6), *computeVelocityNorm(lattice), imSize, imSize);
 }
 
-void writeVTK(MultiBlockLattice2D<T, DESCRIPTOR> &lattice, ComprFlowParam<T> const &parameters, plint iter)
+void writeVTK(MultiBlockLattice2D<T, DESCRIPTOR> &lattice, IncomprFlowParam<T> const &parameters, plint iter)
 {
     T dx = parameters.getDeltaX();
     T dt = parameters.getDeltaT();
@@ -181,24 +181,19 @@ void writeVTK(MultiBlockLattice2D<T, DESCRIPTOR> &lattice, ComprFlowParam<T> con
 
 }
 
-<<<<<<< HEAD
-// void writeHDF5(MultiBlockLattice2D<T, DESCRIPTOR> &lattice, IncomprFlowParam<T> const &parameters, plint iter)
-// {
-=======
-void writeHDF5(MultiBlockLattice2D<T, DESCRIPTOR> &lattice, ComprFlowParam<T> const &parameters, plint iter)
+void writeHDF5(MultiBlockLattice2D<T, DESCRIPTOR> &lattice, IncomprFlowParam<T> const &parameters, plint iter)
 {
->>>>>>> pressure
     
-// #ifdef HDF5
-//     ParallelXdmfDataWriter2D xdmfOut("NACA0012");
-// #endif
+#ifdef HDF5
+    ParallelXdmfDataWriter2D xdmfOut("NACA0012");
+#endif
     
-// #ifdef HDF5
-//     xdmfOut.writeDataField<T>(*computeVelocity(lattice), "velocity");
-// #endif  
+#ifdef HDF5
+    xdmfOut.writeDataField<T>(*computeVelocity(lattice), "velocity");
+#endif  
 
 
-// }
+}
 
 int main(int argc, char *argv[])
 {
@@ -207,15 +202,9 @@ int main(int argc, char *argv[])
     global::directories().setOutputDir("./tmp/");
 
     // Defines the flow parameters
-    ComprFlowParam<T> parameters(
+    IncomprFlowParam<T> parameters(
         (T)1e-2,  // uMax
-        (T)1.0,  // latticeRho
-        (T)1.0,  // latticeTemp
-        (T)1e-2,  // physicalU (set equal to latticeU for simplicity)
-        (T)1.0,  // physicalRho
-        (T)1.0,  // physicalTemp
         (T)1000.,  // Re
-        (T)710.,  // Peclet number, Re*0.71 for air in standard conditions
         150,       // N
         10.,       // lx
         4.        // ly
@@ -282,13 +271,8 @@ int main(int argc, char *argv[])
             
                   
             // Computation of lift and drag 
-<<<<<<< HEAD
             ofileDrag << setprecision(10) << lattice.getInternalStatistics().getSum(forceIds[0]) << endl;
             ofileLift << setprecision(10) << lattice.getInternalStatistics().getSum(forceIds[1]) << endl;
-=======
-            //ofileDrag << setprecision(10) << lattice.getInternalStatistics().getSum(forceIds[0]) << endl;
-            //ofileLift << setprecision(10) << lattice.getInternalStatistics().getSum(forceIds[1]) << endl;
->>>>>>> pressure
             //pcout << "Saving HDF5 file ..." << endl;
             //writeHDF5(lattice, parameters, iT);
             
