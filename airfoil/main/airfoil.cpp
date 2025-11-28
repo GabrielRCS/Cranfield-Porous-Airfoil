@@ -198,8 +198,8 @@ void writeHDF5(MultiBlockLattice2D<T, DESCRIPTOR> &lattice, IncomprFlowParam<T> 
 int main(int argc, char *argv[])
 {
     plbInit(&argc, &argv);
-
-    global::directories().setOutputDir("./tmp/");
+    T AoA = 0.0; // Angle of attack in degrees
+    global::directories().setOutputDir("./Results/" + getStringFromNumber(AoA) + "/");
 
     // Defines the flow parameters
     IncomprFlowParam<T> parameters(
@@ -214,7 +214,7 @@ int main(int argc, char *argv[])
 
 #ifndef PLB_REGRESSION
     const T imSave = (T)0.5;
-    const T vtkSave = (T)1.;
+    const T vtkSave = (T)20.; // Save VTK files every 20 time units
     const T maxT = (T)20.1;
 #else
     const T maxT = (T)0.5;
@@ -269,10 +269,11 @@ int main(int argc, char *argv[])
                   << "; drag=" << lattice.getInternalStatistics().getSum(forceIds[0]) 
                   << "; lift=" << lattice.getInternalStatistics().getSum(forceIds[1]) << endl;
             
-                  
+            T dx = parameters.getDeltaX();
+            T dt = parameters.getDeltaT();
             // Computation of lift and drag 
-            ofileDrag << setprecision(10) << lattice.getInternalStatistics().getSum(forceIds[0]) << endl;
-            ofileLift << setprecision(10) << lattice.getInternalStatistics().getSum(forceIds[1]) << endl;
+            ofileDrag << setprecision(10) << 2*lattice.getInternalStatistics().getSum(forceIds[0])* dx*dx*dx/(dt*dt) << endl;
+            ofileLift << setprecision(10) << 2*lattice.getInternalStatistics().getSum(forceIds[1])* dx*dx*dx/(dt*dt) << endl;
             //pcout << "Saving HDF5 file ..." << endl;
             //writeHDF5(lattice, parameters, iT);
             
