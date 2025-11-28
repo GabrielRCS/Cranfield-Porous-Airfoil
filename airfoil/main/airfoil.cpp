@@ -175,7 +175,7 @@ void writeVTK(MultiBlockLattice2D<T, DESCRIPTOR> &lattice, IncomprFlowParam<T> c
 
     vtkOut.writeData<float>(*computeVelocityNorm(lattice), "velocityNorm", dx / dt);
     vtkOut.writeData<2, float>(*computeVelocity(lattice), "velocity", dx / dt);
-    vtkOut.writeData<float>(*computePressure(lattice), "pressure", dx / dt);
+    vtkOut.writeData<float>(*computePressure(lattice), "pressure", 1.);
     vtkOut.writeData<float>(*computeVorticity(*computeVelocity(lattice)), "vorticity", 1./dt);
     vtkOut.writeData<float>(*computeDensity(lattice), "density", 1.);
 
