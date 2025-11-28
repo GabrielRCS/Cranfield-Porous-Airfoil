@@ -196,6 +196,17 @@ public:
 };
 
 template <typename T, template <typename U> class Descriptor>
+class BoxPressureFunctional2D : public BoxProcessingFunctional2D_LS<T, Descriptor, T> {
+public:
+    virtual void process(
+        Box2D domain, BlockLattice2D<T, Descriptor> &lattice, ScalarField2D<T> &scalarField);
+    virtual BoxPressureFunctional2D<T, Descriptor> *clone() const;
+    virtual void getTypeOfModification(std::vector<modif::ModifT> &modified) const;
+    virtual BlockDomain::DomainT appliesTo() const;
+};
+
+
+template <typename T, template <typename U> class Descriptor>
 class BoxRhoBarFunctional2D : public BoxProcessingFunctional2D_LS<T, Descriptor, T> {
 public:
     virtual void process(

@@ -145,6 +145,24 @@ std::unique_ptr<ScalarField2D<T> > computeDensity(BlockLattice2D<T, Descriptor> 
     return std::unique_ptr<ScalarField2D<T> >(density);
 }
 
+/* *************** Pressure ****************************************** */
+template <typename T, template <typename U> class Descriptor>
+void computePressure(BlockLattice2D<T, Descriptor> &lattice, ScalarField2D<T> &pressure)
+{
+    applyProcessingFunctional(
+        new BoxPressureFunctional2D<T, Descriptor>, lattice.getBoundingBox(), lattice, pressure);
+}
+
+template <typename T, template <typename U> class Descriptor>
+std::unique_ptr<ScalarField2D<T> > computePressure(BlockLattice2D<T, Descriptor> &lattice)
+{
+    ScalarField2D<T> *pressure = new ScalarField2D<T>(lattice.getNx(), lattice.getNy());
+    computePressure(lattice, *pressure);
+    return std::unique_ptr<ScalarField2D<T> >(pressure);
+}
+
+
+
 /* *************** RhoBar ******************************************* */
 
 template <typename T, template <typename U> class Descriptor>
@@ -1503,6 +1521,35 @@ std::unique_ptr<MultiScalarField2D<T> > computeDensity(MultiBlockLattice2D<T, De
 {
     return computeDensity(lattice, lattice.getBoundingBox());
 }
+
+
+
+/* *************** Pressure ****************************************** */
+template <typename T, template <typename U> class Descriptor>
+void computePressure(
+    MultiBlockLattice2D<T, Descriptor> &lattice, MultiScalarField2D<T> &pressure, Box2D domain)
+{
+    applyProcessingFunctional(new BoxPressureFunctional2D<T, Descriptor>, domain, lattice, pressure);
+}
+template <typename T, template <typename U> class Descriptor>
+std::unique_ptr<MultiScalarField2D<T> > computePressure(
+    MultiBlockLattice2D<T, Descriptor> &lattice, Box2D domain)
+{
+    std::unique_ptr<MultiScalarField2D<T> > pressure = generateMultiScalarField<T>(lattice, domain);
+
+    computePressure(
+        lattice, *pressure,
+        domain.enlarge(lattice.getMultiBlockManagement().getEnvelopeWidth()));
+    return pressure;
+}
+
+template <typename T, template <typename U> class Descriptor>
+std::unique_ptr<MultiScalarField2D<T> > computePressure(MultiBlockLattice2D<T, Descriptor> &lattice)
+{
+    return computePressure(lattice, lattice.getBoundingBox());
+}
+
+
 
 /* *************** RhoBar ******************************************* */
 
