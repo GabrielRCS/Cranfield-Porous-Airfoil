@@ -59,6 +59,31 @@ typedef double T;
 #define DESCRIPTOR MRTD2Q9Descriptor
 typedef MRTdynamics<T, DESCRIPTOR> BackgroundDynamics;
 
+std::string AoA;
+int N;
+T lx;
+T ly;
+std::string geometryLocation;
+
+
+// Class to read parameters
+
+
+void readParameters(XMLreader const &document)
+    {
+        // Read and assign values to global parameters
+        document["geometry"]["location"].read(geometryLocation);
+        document["geometry"]["AoA"].read(AoA);
+        document["geometry"]["N"].read(N);
+        document["geometry"]["lx"].read(lx);
+        document["geometry"]["ly"].read(ly);
+    }
+
+
+
+
+
+
 // Class to define a domain from a native 2D boolean mask
 template <typename T>
 class MaskShapeDomain2D : public DomainFunctional2D {
@@ -106,7 +131,7 @@ private:
 /// A functional, used to instantiate bounce-back nodes at the locations of the cylinder
 void defineGeometry(
     MultiBlockLattice2D<T, DESCRIPTOR> &lattice, IncomprFlowParam<T> const &parameters,
-    OnLatticeBoundaryCondition2D<T, DESCRIPTOR> &boundaryCondition, Array<plint, 2> forceIds)
+    OnLatticeBoundaryCondition2D<T, DESCRIPTOR> &boundaryCondition, Array<plint, 2> forceIds, std::string geometryLocation)
 {
     const plint nx = parameters.getNx();
     const plint ny = parameters.getNy();
@@ -137,7 +162,7 @@ void defineGeometry(
 
     // Define the mask 
     MultiScalarField2D<bool> boolMaskPLB(nx, ny);
-    plb_ifstream ifile("geometry.dat");
+    plb_ifstream ifile(geometryLocation.c_str());
     ifile >> boolMaskPLB;
 
     // Convert to native 2D mask
@@ -181,6 +206,8 @@ void writeVTK(MultiBlockLattice2D<T, DESCRIPTOR> &lattice, IncomprFlowParam<T> c
 
 }
 
+
+
 void writeHDF5(MultiBlockLattice2D<T, DESCRIPTOR> &lattice, IncomprFlowParam<T> const &parameters, plint iter)
 {
     
@@ -197,17 +224,39 @@ void writeHDF5(MultiBlockLattice2D<T, DESCRIPTOR> &lattice, IncomprFlowParam<T> 
 
 int main(int argc, char *argv[])
 {
+
     plbInit(&argc, &argv);
-    T AoA = 0.0; // Angle of attack in degrees
-    global::directories().setOutputDir("./Results/" + getStringFromNumber(AoA) + "/");
+    string paramXmlFileName;
+
+    try {
+        global::argv(1).read(paramXmlFileName);
+    } catch (PlbIOException &exception) {
+        pcout << "Wrong parameters; the syntax is: " << (std::string)global::argv(0)
+              << " parameter-input-file.xml" << std::endl;
+        return -1;
+    }
+
+
+    try {
+        XMLreader document(paramXmlFileName);
+        readParameters(paramXmlFileName);
+    } catch (PlbIOException &exception) {
+        pcout << "Error in input file " << paramXmlFileName << ": " << exception.what()
+              << std::endl;
+        return -1;
+    }
+
+    
+
+    global::directories().setOutputDir("Results/" + AoA +  "/");
 
     // Defines the flow parameters
     IncomprFlowParam<T> parameters(
         (T)1e-2,  // uMax
         (T)1000.,  // Re
-        150,       // N
-        10.,       // lx
-        4.        // ly
+        N,       // N
+        lx,       // lx
+        ly        // ly
     );
     const T logT = (T)0.01;
 
@@ -239,12 +288,16 @@ int main(int argc, char *argv[])
         createInterpBoundaryCondition2D<T, DESCRIPTOR>();
     // boundaryCondition = createLocalBoundaryCondition2D<T,DESCRIPTOR>();
 
-    defineGeometry(lattice, parameters, *boundaryCondition, forceIds);
+    defineGeometry(lattice, parameters, *boundaryCondition, forceIds, geometryLocation);
 
 
     //plb_ofstream ofileVelocity("velocityProfiles.dat");
-    plb_ofstream ofileDrag("dragProfiles.dat");
-    plb_ofstream ofileLift("liftProfiles.dat");
+
+    std::string dragPath   = "Results/" + AoA  + "/dragProfiles.dat";
+    std::string liftPath   = "Results/" + AoA + "/liftProfiles.dat";
+
+    plb_ofstream ofileDrag(dragPath.c_str());
+    plb_ofstream ofileLift(liftPath.c_str());
 
     // Main loop over time iterations.
     for (plint iT = 0; iT * parameters.getDeltaT() < maxT; ++iT) {
@@ -286,5 +339,6 @@ int main(int argc, char *argv[])
     }
 
     delete boundaryCondition;
+    
 }
 

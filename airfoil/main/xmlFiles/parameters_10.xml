@@ -1,0 +1,7 @@
+<geometry>
+    <location>./geometry/geometry_10.dat</location>
+    <AoA>10</AoA>
+    <N>150</N>
+    <lx>16</lx>
+    <ly>8</ly>
+</geometry>
