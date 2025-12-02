@@ -4,7 +4,7 @@ import h5py
 import matplotlib.pyplot as plt
 
 # --- Load your 2D boolean mask --- and 
-mask_2d = np.loadtxt("./geometry/geometry_28.dat")   # array of 0s and 1s
+mask_2d = np.loadtxt("./geometry_flat.dat")   # array of 0s and 1s
 
     
 # --- Wrap as a VTK image grid ---
@@ -22,8 +22,7 @@ grid.origin = (0, 0, 0)
 # --- Add the mask data ---
 grid.cell_data["mask"] = mask_2d.flatten(order="F")
 
-# --- Save for ParaView ---
-grid.save("mask_2d.vti")
+
 
 # --- Optional preview ---
 grid.plot(scalars="mask", cmap="gray")
