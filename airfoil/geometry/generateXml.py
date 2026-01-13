@@ -7,18 +7,16 @@ vtkSave = 20
 imSave = 0.5
 
 for i in range(1, 29):  # 1 through 28
-    content = f"""<geometry>
+    content = f"""<root>
     <location>./geometry/geometry_{i}.dat</location>
     <ResultFile>{i}</ResultFile>
     <N>{N}</N>
     <lx>{lx}</lx>
     <ly>{ly}</ly>
-</geometry>
-<simulation>
     <maxT>{maxT}</maxT>
     <vtkSave>{vtkSave}</vtkSave>
     <imSave>{imSave}</imSave>
-</simulation>
+</root>
 """
 
     filename = f"parameters_{i}.xml"

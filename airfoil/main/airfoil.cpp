@@ -75,14 +75,14 @@ std::string geometryLocation;
 void readParameters(XMLreader const &document)
     {
         // Read and assign values to global parameters
-        document["geometry"]["location"].read(geometryLocation);
-        document["geometry"]["ResultFile"].read(ResultFile);
-        document["geometry"]["N"].read(N);
-        document["geometry"]["lx"].read(lx);
-        document["geometry"]["ly"].read(ly);
-        document["simulation"]["maxT"].read(ImaxT);
-        document["simulation"]["vtkSave"].read(IvtkSave);
-        document["simulation"]["imSave"].read(IimSave);
+        document["root"]["location"].read(geometryLocation);
+        document["root"]["ResultFile"].read(ResultFile);
+        document["root"]["N"].read(N);
+        document["root"]["lx"].read(lx);
+        document["root"]["ly"].read(ly);
+        document["root"]["maxT"].read(ImaxT);
+        document["root"]["vtkSave"].read(IvtkSave);
+        document["root"]["imSave"].read(IimSave);
     }
 
 
