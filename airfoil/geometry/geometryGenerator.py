@@ -5,17 +5,16 @@ from scipy.spatial import distance
 from matplotlib.path import Path
 from shapely.geometry import Point, Polygon
 
-AoA_sweep = np.linspace(0,28,15)
+AoA_sweep = np.arange(0,29, 1) # Angle of Attack sweep from 0 to 28 degrees
 
-for x in AoA_sweep:
+for aoa in AoA_sweep:
     # Clear workspace (not needed in Python, but included for clarity)
     # %% GENERAL FLOW CONSTANTS - INPUTS
     scale_x = 16  # The length of the domain in the x direction (in NACA length units)
     scale_y = 8   # The length of the domain in the y direction
     lattice_resolution = 150
-    meshRefinement = 2
 
-    AoA_deg = x  # Angle of Attack in degrees; WARNING: negative for Palabos
+    AoA_deg = aoa  # Angle of Attack in degrees; WARNING: negative for Palabos
     Pore_AoA_deg = 0  # Angle of Attack of pores in NACA referential
     Pore_relative_positions = []  # [0, 0.02, 0.03, 0.04, 0.05, 0.06]
     pore_width = 0.005
@@ -81,4 +80,4 @@ for x in AoA_sweep:
     print("Padded shape:", padded.shape)
     geometry = padded.flatten()
 
-    np.savetxt(f'geometry_{int(x)}.dat', geometry, fmt='%d', newline=' ')
+    np.savetxt(f'geometry_{int(aoa)}.dat', geometry, fmt='%d', newline=' ')

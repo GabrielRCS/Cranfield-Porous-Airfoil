@@ -1,7 +1,12 @@
 <geometry>
     <location>./geometry/geometry_0.dat</location>
-    <AoA>0</AoA>
+    <ResultFile>Test</ResultFile>
     <N>150</N>
     <lx>16</lx>
     <ly>8</ly>
 </geometry>
+<simulation>
+    <maxT>20.1</maxT>
+    <vtkSave>20</vtkSave>
+    <imSave>0.5</imSave>
+</simulation>

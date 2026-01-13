@@ -59,7 +59,10 @@ typedef double T;
 #define DESCRIPTOR MRTD2Q9Descriptor
 typedef MRTdynamics<T, DESCRIPTOR> BackgroundDynamics;
 
-std::string AoA;
+std::string ResultFile;
+T ImaxT;
+T IvtkSave;
+T IimSave;
 int N;
 T lx;
 T ly;
@@ -73,10 +76,13 @@ void readParameters(XMLreader const &document)
     {
         // Read and assign values to global parameters
         document["geometry"]["location"].read(geometryLocation);
-        document["geometry"]["AoA"].read(AoA);
+        document["geometry"]["ResultFile"].read(ResultFile);
         document["geometry"]["N"].read(N);
         document["geometry"]["lx"].read(lx);
         document["geometry"]["ly"].read(ly);
+        document["simulation"]["maxT"].read(ImaxT);
+        document["simulation"]["vtkSave"].read(IvtkSave);
+        document["simulation"]["imSave"].read(IimSave);
     }
 
 
@@ -248,25 +254,25 @@ int main(int argc, char *argv[])
 
     
 
-    global::directories().setOutputDir("Results/" + AoA +  "/");
+    global::directories().setOutputDir("Results/" + ResultFile +  "/");
 
     // Defines the flow parameters
     IncomprFlowParam<T> parameters(
-        (T)1e-2,  // uMax
+        (T)1e-2,   // uMax
         (T)1000.,  // Re
-        N,       // N
-        lx,       // lx
-        ly        // ly
+        N,         // N
+        lx,        // lx
+        ly         // ly
     );
     const T logT = (T)0.01;
 
 
 #ifndef PLB_REGRESSION
-    const T imSave = (T)0.5;
-    const T vtkSave = (T)20.; // Save VTK files every 20 time units
-    const T maxT = (T)20.1;
+    const T imSave = IimSave;
+    const T vtkSave = IvtkSave; // Save VTK files every 20 time units
+    const T maxT = ImaxT; // Total simulation time: 4e4 lattice time units, to match Illio
 #else
-    const T maxT = (T)0.5;
+    const T maxT = ImaxT;
 #endif
 
     writeLogFile(parameters, "Flow parameters");
@@ -293,8 +299,8 @@ int main(int argc, char *argv[])
 
     //plb_ofstream ofileVelocity("velocityProfiles.dat");
 
-    std::string dragPath   = "Results/" + AoA  + "/dragProfiles.dat";
-    std::string liftPath   = "Results/" + AoA + "/liftProfiles.dat";
+    std::string dragPath   = "Results/" + ResultFile  + "/dragProfiles.dat";
+    std::string liftPath   = "Results/" + ResultFile + "/liftProfiles.dat";
 
     plb_ofstream ofileDrag(dragPath.c_str());
     plb_ofstream ofileLift(liftPath.c_str());

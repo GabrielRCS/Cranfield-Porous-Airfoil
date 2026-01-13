@@ -18,7 +18,7 @@
 BUILD_HDF5:BOOL=ON
 
 //Path to a program.
-CCACHE_PROGRAM:FILEPATH=CCACHE_PROGRAM-NOTFOUND
+CCACHE_PROGRAM:FILEPATH=/usr/bin/ccache
 
 //Path to a program.
 CMAKE_ADDR2LINE:FILEPATH=/usr/bin/addr2line

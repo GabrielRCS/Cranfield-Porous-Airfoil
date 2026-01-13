@@ -73,7 +73,7 @@ CMakeFiles/airfoil.dir/airfoil.cpp.o: CMakeFiles/airfoil.dir/flags.make
 CMakeFiles/airfoil.dir/airfoil.cpp.o: /home/gabriel/palabos/airfoil/main/airfoil.cpp
 CMakeFiles/airfoil.dir/airfoil.cpp.o: CMakeFiles/airfoil.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/gabriel/palabos/airfoil/main/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/airfoil.dir/airfoil.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/airfoil.dir/airfoil.cpp.o -MF CMakeFiles/airfoil.dir/airfoil.cpp.o.d -o CMakeFiles/airfoil.dir/airfoil.cpp.o -c /home/gabriel/palabos/airfoil/main/airfoil.cpp
+	/usr/bin/ccache /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/airfoil.dir/airfoil.cpp.o -MF CMakeFiles/airfoil.dir/airfoil.cpp.o.d -o CMakeFiles/airfoil.dir/airfoil.cpp.o -c /home/gabriel/palabos/airfoil/main/airfoil.cpp
 
 CMakeFiles/airfoil.dir/airfoil.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/airfoil.dir/airfoil.cpp.i"

@@ -50,7 +50,7 @@ run_airfoil_job() {
     job_index=$2
 
     # Full path to the parameter file
-    param_file="$./xmlFiles/parameters_${case_aoa}.xml"
+    param_file="${PBS_O_WORKDIR}/xmlFiles/parameters_${case_aoa}.xml"
 
     # Check if parameter file exists
     if [ ! -f "$param_file" ]; then
