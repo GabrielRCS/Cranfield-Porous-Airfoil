@@ -1,7 +1,10 @@
-<geometry>
+<root>
     <location>./geometry/geometry_5.dat</location>
-    <AoA>5</AoA>
+    <ResultFile>5</ResultFile>
     <N>150</N>
     <lx>16</lx>
     <ly>8</ly>
-</geometry>
+    <maxT>20.1</maxT>
+    <vtkSave>20</vtkSave>
+    <imSave>0.5</imSave>
+</root>

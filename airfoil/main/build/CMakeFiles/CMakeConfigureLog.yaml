@@ -647,3 +647,135 @@ events:
         
       exitCode: 0
 ...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/FindHDF5.cmake:238 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/FindHDF5.cmake:608 (_HDF5_test_regular_compiler_C)"
+      - "CMakeLists.txt:92 (find_package)"
+    directories:
+      source: "/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-YeyL72"
+      binary: "/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-YeyL72"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+    buildResult:
+      variable: "HDF5_C_COMPILER_NO_INTERROGATE"
+      cached: true
+      stdout: |
+        Change Dir: '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-YeyL72'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_20417/fast
+        gmake[1]: Entering directory '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-YeyL72'
+        /usr/bin/gmake  -f CMakeFiles/cmTC_20417.dir/build.make CMakeFiles/cmTC_20417.dir/build
+        gmake[2]: Entering directory '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-YeyL72'
+        Building C object CMakeFiles/cmTC_20417.dir/cmake_hdf5_test.c.o
+        /usr/bin/cc    -o CMakeFiles/cmTC_20417.dir/cmake_hdf5_test.c.o -c /home/gabriel/palabos/airfoil/main/build/CMakeFiles/hdf5/cmake_hdf5_test.c
+        /home/gabriel/palabos/airfoil/main/build/CMakeFiles/hdf5/cmake_hdf5_test.c:1:10: fatal error: hdf5.h: No such file or directory
+            1 | #include <hdf5.h>
+              |          ^~~~~~~~
+        compilation terminated.
+        gmake[2]: *** [CMakeFiles/cmTC_20417.dir/build.make:78: CMakeFiles/cmTC_20417.dir/cmake_hdf5_test.c.o] Error 1
+        gmake[2]: Leaving directory '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-YeyL72'
+        gmake[1]: *** [Makefile:127: cmTC_20417/fast] Error 2
+        gmake[1]: Leaving directory '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-YeyL72'
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1278 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1322 (_MPI_try_staged_settings)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1645 (_MPI_check_lang_works)"
+      - "CMakeLists.txt:153 (find_package)"
+    description: "The MPI test test_mpi for C in mode normal"
+    directories:
+      source: "/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-vjfMvU"
+      binary: "/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-vjfMvU"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+    buildResult:
+      variable: "MPI_RESULT_C_test_mpi_normal"
+      cached: true
+      stdout: |
+        Change Dir: '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-vjfMvU'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_b48c8/fast
+        gmake[1]: Entering directory '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-vjfMvU'
+        /usr/bin/gmake  -f CMakeFiles/cmTC_b48c8.dir/build.make CMakeFiles/cmTC_b48c8.dir/build
+        gmake[2]: Entering directory '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-vjfMvU'
+        Building C object CMakeFiles/cmTC_b48c8.dir/test_mpi.c.o
+        /usr/bin/cc  -isystem /usr/lib/x86_64-linux-gnu/openmpi/include -isystem /usr/lib/x86_64-linux-gnu/openmpi/include/openmpi  -o CMakeFiles/cmTC_b48c8.dir/test_mpi.c.o -c /home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-vjfMvU/test_mpi.c
+        Linking C executable cmTC_b48c8
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b48c8.dir/link.txt --verbose=1
+        /usr/bin/cc -rdynamic CMakeFiles/cmTC_b48c8.dir/test_mpi.c.o -o cmTC_b48c8  -Wl,-rpath,/usr/lib/x86_64-linux-gnu/openmpi/lib /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so 
+        gmake[2]: Leaving directory '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-vjfMvU'
+        gmake[1]: Leaving directory '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-vjfMvU'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1278 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1322 (_MPI_try_staged_settings)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1645 (_MPI_check_lang_works)"
+      - "CMakeLists.txt:153 (find_package)"
+    description: "The MPI test test_mpi for CXX in mode normal"
+    directories:
+      source: "/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-Pwgi4Z"
+      binary: "/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-Pwgi4Z"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "-std=c++17 -Wall  -Wextra -Wnon-virtual-dtor"
+    buildResult:
+      variable: "MPI_RESULT_CXX_test_mpi_normal"
+      cached: true
+      stdout: |
+        Change Dir: '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-Pwgi4Z'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_febb7/fast
+        gmake[1]: Entering directory '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-Pwgi4Z'
+        /usr/bin/gmake  -f CMakeFiles/cmTC_febb7.dir/build.make CMakeFiles/cmTC_febb7.dir/build
+        gmake[2]: Entering directory '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-Pwgi4Z'
+        Building CXX object CMakeFiles/cmTC_febb7.dir/test_mpi.cpp.o
+        /usr/bin/c++  -isystem /usr/lib/x86_64-linux-gnu/openmpi/include -isystem /usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -std=c++17 -Wall  -Wextra -Wnon-virtual-dtor  -o CMakeFiles/cmTC_febb7.dir/test_mpi.cpp.o -c /home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-Pwgi4Z/test_mpi.cpp
+        Linking CXX executable cmTC_febb7
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_febb7.dir/link.txt --verbose=1
+        /usr/bin/c++ -std=c++17 -Wall  -Wextra -Wnon-virtual-dtor  -rdynamic CMakeFiles/cmTC_febb7.dir/test_mpi.cpp.o -o cmTC_febb7  -Wl,-rpath,/usr/lib/x86_64-linux-gnu/openmpi/lib /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so 
+        gmake[2]: Leaving directory '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-Pwgi4Z'
+        gmake[1]: Leaving directory '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-Pwgi4Z'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1278 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1672 (_MPI_try_staged_settings)"
+      - "CMakeLists.txt:153 (find_package)"
+    description: "The MPI test test_mpi for CXX in mode MPICXX"
+    directories:
+      source: "/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-6gk9nt"
+      binary: "/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-6gk9nt"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "-std=c++17 -Wall  -Wextra -Wnon-virtual-dtor"
+    buildResult:
+      variable: "MPI_RESULT_CXX_test_mpi_MPICXX"
+      cached: true
+      stdout: |
+        Change Dir: '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-6gk9nt'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_d14af/fast
+        gmake[1]: Entering directory '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-6gk9nt'
+        /usr/bin/gmake  -f CMakeFiles/cmTC_d14af.dir/build.make CMakeFiles/cmTC_d14af.dir/build
+        gmake[2]: Entering directory '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-6gk9nt'
+        Building CXX object CMakeFiles/cmTC_d14af.dir/test_mpi.cpp.o
+        /usr/bin/c++  -isystem /usr/lib/x86_64-linux-gnu/openmpi/include -isystem /usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -std=c++17 -Wall  -Wextra -Wnon-virtual-dtor  -o CMakeFiles/cmTC_d14af.dir/test_mpi.cpp.o -c /home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-6gk9nt/test_mpi.cpp
+        Linking CXX executable cmTC_d14af
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d14af.dir/link.txt --verbose=1
+        /usr/bin/c++ -std=c++17 -Wall  -Wextra -Wnon-virtual-dtor  -rdynamic CMakeFiles/cmTC_d14af.dir/test_mpi.cpp.o -o cmTC_d14af  -Wl,-rpath,/usr/lib/x86_64-linux-gnu/openmpi/lib /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so 
+        gmake[2]: Leaving directory '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-6gk9nt'
+        gmake[1]: Leaving directory '/home/gabriel/palabos/airfoil/main/build/CMakeFiles/CMakeScratch/TryCompile-6gk9nt'
+        
+      exitCode: 0
+...

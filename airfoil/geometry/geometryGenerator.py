@@ -16,8 +16,11 @@ for aoa in AoA_sweep:
 
     AoA_deg = aoa  # Angle of Attack in degrees; WARNING: negative for Palabos
     Pore_AoA_deg = 0  # Angle of Attack of pores in NACA referential
-    Pore_relative_positions = []  # [0, 0.02, 0.03, 0.04, 0.05, 0.06]
-    pore_width = 0.005
+    pore_width = 0.015
+    pore_vertical_spacing = 0.006
+    #num_pores = 4
+    Pore_relative_positions = (pore_width+pore_vertical_spacing)* np.arange(-2,1)  # [0, 0.02, 0.03, 0.04, 0.05, 0.06]
+    
 
     # %% GENERAL FLOW CONSTANTS - OUTPUTS
     lx = lattice_resolution * scale_x  # number of cells in x-direction
@@ -58,20 +61,20 @@ for aoa in AoA_sweep:
     # Check if each point in the grid is inside the NACA polygon
     obst = np.array([polygon.contains(Point(xy)) for xy in np.column_stack((x.ravel(), y.ravel()))]).reshape(x.shape)
 
-    # %% Add the porosity (commented out as in the original MATLAB code)
-    # poreMask = np.zeros((lx, ly))
-    # for i in range(n_pores):
-    #     Pore = np.array([[-1, -pore_width/2], [-1, pore_width/2], [1, pore_width/2], [1, -pore_width/2]])
-    #     Pore = np.dot(Pore, RotPores.T)
-    #     Pore = Pore + [center_x, center_y + Pore_relative_positions[i]]
-    #     Pore = Pore * [scaleFactor_x, scaleFactor_y] + [obst_x, obst_y]
-    #     xp = Pore[:, 0]
-    #     yp = Pore[:, 1]
-    #     pore_path = Path(np.column_stack((xp, yp)))
-    #     poreGeom = pore_path.contains_points(np.column_stack((x.ravel(), y.ravel()))).reshape(x.shape)
-    #     poreMask += poreGeom
-    # poreMask = 1 - poreMask
-    # obst = obst * poreMask
+    # %% Add the porosity 
+    poreMask = np.zeros((lx, ly))
+    for i in range(n_pores):
+        Pore = np.array([[-1, -pore_width/2], [-1, pore_width/2], [1, pore_width/2], [1, -pore_width/2]])
+        Pore = np.dot(Pore, RotPores)
+        Pore = Pore + [center_x, center_y + Pore_relative_positions[i]]
+        Pore = Pore * [lattice_resolution, lattice_resolution] + [obst_x, obst_y]
+        xp = Pore[:, 0]
+        yp = Pore[:, 1]
+        pore_path = Path(np.column_stack((xp, yp)))
+        poreGeom = pore_path.contains_points(np.column_stack((x.ravel(), y.ravel()))).reshape(x.shape)
+        poreMask += poreGeom
+    poreMask = 1 - poreMask
+    obst = obst * poreMask
 
     # %% Generate the geometry in a format appropriate for Palabos
     geometry = obst.astype(int)

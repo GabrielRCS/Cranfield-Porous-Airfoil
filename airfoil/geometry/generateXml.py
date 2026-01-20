@@ -1,12 +1,12 @@
 N = 150
 ly = 8
-lx = 8
+lx = 16
 
 maxT = 20.1
 vtkSave = 20
 imSave = 0.5
 
-for i in range(1, 29):  # 1 through 28
+for i in range(0, 29):  # 0 through 28
     content = f"""<root>
     <location>./geometry/geometry_{i}.dat</location>
     <ResultFile>{i}</ResultFile>

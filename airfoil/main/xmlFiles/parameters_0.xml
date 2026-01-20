@@ -1,6 +1,6 @@
 <root>
     <location>./geometry/geometry_0.dat</location>
-    <ResultFile>Test</ResultFile>
+    <ResultFile>0</ResultFile>
     <N>150</N>
     <lx>16</lx>
     <ly>8</ly>
@@ -8,4 +8,3 @@
     <vtkSave>20</vtkSave>
     <imSave>0.5</imSave>
 </root>
-    
