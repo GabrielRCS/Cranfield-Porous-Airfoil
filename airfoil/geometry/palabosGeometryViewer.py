@@ -4,13 +4,17 @@ import h5py
 import matplotlib.pyplot as plt
 
 # --- Load your 2D boolean mask --- and 
-mask_2d = np.loadtxt("./geometry_28.dat")   # array of 0s and 1s
+mask_2d = np.loadtxt("./geometry_4.dat")   # array of 0s and 1s
 
+# %% GENERAL FLOW CONSTANTS - INPUTS
+scale_x = 16  # The length of the domain in the x direction (in NACA length units)
+scale_y = 8   # The length of the domain in the y direction
+lattice_resolution = 300
 
     
 # --- Wrap as a VTK image grid ---
 
-nx, ny = 16*150+1, 8*150+1
+nx, ny = scale_x*lattice_resolution+1, scale_y*lattice_resolution+1
 mask_2d = mask_2d.reshape((nx, ny))
 grid = pv.ImageData()
 grid.dimensions = (nx + 1, ny + 1, 1)

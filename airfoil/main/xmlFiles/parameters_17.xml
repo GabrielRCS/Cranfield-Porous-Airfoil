@@ -1,7 +1,7 @@
 <root>
     <location>./geometry/geometry_17.dat</location>
     <ResultFile>17</ResultFile>
-    <N>150</N>
+    <N>300</N>
     <lx>16</lx>
     <ly>8</ly>
     <maxT>20.1</maxT>
