@@ -5,6 +5,8 @@ from scipy.spatial import distance
 from matplotlib.path import Path
 from shapely.geometry import Point, Polygon
 
+porous = False
+porous_file_name = '_porous' if porous else ''
 #AoA_sweep = np.arange(0,29, 1) # Angle of Attack sweep from 0 to 28 degrees
 # %% GENERAL FLOW CONSTANTS - INPUTS
 scale_x = 16  # The length of the domain in the x direction (in NACA length units)
@@ -67,19 +69,20 @@ for aoa in AoA_sweep:
     obst = np.array([polygon.contains(Point(xy)) for xy in np.column_stack((x.ravel(), y.ravel()))]).reshape(x.shape)
 
     # %% Add the porosity 
-    poreMask = np.zeros((lx, ly))
-    for i in range(n_pores):
-        Pore = np.array([[-1, -pore_width/2], [-1, pore_width/2], [1, pore_width/2], [1, -pore_width/2]])
-        Pore = np.dot(Pore, RotPores)
-        Pore = Pore + [center_x, center_y + Pore_relative_positions[i]]
-        Pore = Pore * [lattice_resolution, lattice_resolution] + [obst_x, obst_y]
-        xp = Pore[:, 0]
-        yp = Pore[:, 1]
-        pore_path = Path(np.column_stack((xp, yp)))
-        poreGeom = pore_path.contains_points(np.column_stack((x.ravel(), y.ravel()))).reshape(x.shape)
-        poreMask += poreGeom
-    poreMask = 1 - poreMask
-    obst = obst * poreMask
+    if porous:
+        poreMask = np.zeros((lx, ly))
+        for i in range(n_pores):
+            Pore = np.array([[-1, -pore_width/2], [-1, pore_width/2], [1, pore_width/2], [1, -pore_width/2]])
+            Pore = np.dot(Pore, RotPores)
+            Pore = Pore + [center_x, center_y + Pore_relative_positions[i]]
+            Pore = Pore * [lattice_resolution, lattice_resolution] + [obst_x, obst_y]
+            xp = Pore[:, 0]
+            yp = Pore[:, 1]
+            pore_path = Path(np.column_stack((xp, yp)))
+            poreGeom = pore_path.contains_points(np.column_stack((x.ravel(), y.ravel()))).reshape(x.shape)
+            poreMask += poreGeom
+        poreMask = 1 - poreMask
+        obst = obst * poreMask
 
     # %% Generate the geometry in a format appropriate for Palabos
     geometry = obst.astype(int)
@@ -88,12 +91,12 @@ for aoa in AoA_sweep:
     print("Padded shape:", padded.shape)
     geometry = padded.flatten()
 
-    np.savetxt(f'geometry_{int(aoa)}.dat', geometry, fmt='%d', newline=' ')
+    np.savetxt(f'geometry_{int(aoa)}{porous_file_name}.dat', geometry, fmt='%d', newline=' ')
     
     # %% Generate the XML parameter file
     content = f"""<root>
-    <location>./geometry/geometry_{int(aoa)}.dat</location>
-    <ResultFile>{int(aoa)}</ResultFile>
+    <location>./geometry/geometry_{int(aoa)}{porous_file_name}.dat</location>
+    <ResultFile>{int(aoa)}{porous_file_name}</ResultFile>
     <N>{lattice_resolution}</N>
     <lx>{scale_x}</lx>
     <ly>{scale_y}</ly>
@@ -103,7 +106,7 @@ for aoa in AoA_sweep:
 </root>
 """
 
-    filename = f"parameters_{int(aoa)}.xml"
+    filename = f"parameters_{int(aoa)}{porous_file_name}.xml"
     with open(filename, "w") as f:
         f.write(content)
 

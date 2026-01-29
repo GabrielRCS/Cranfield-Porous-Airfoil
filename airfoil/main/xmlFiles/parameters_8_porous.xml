@@ -1,0 +1,10 @@
+<root>
+    <location>./geometry/geometry_8_porous.dat</location>
+    <ResultFile>8_porous</ResultFile>
+    <N>300</N>
+    <lx>16</lx>
+    <ly>8</ly>
+    <maxT>20.1</maxT>
+    <vtkSave>20</vtkSave>
+    <imSave>0.5</imSave>
+</root>
