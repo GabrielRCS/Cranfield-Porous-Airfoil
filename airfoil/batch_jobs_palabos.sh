@@ -10,7 +10,7 @@
 #PBS -l select=1:ncpus=64:mpiprocs=64
 ##
 ## STEP 3: Select the correct queue
-#PBS -q five_day
+#PBS -q half_day
 ##
 ## STEP 4: Replace with your Cranfield email address
 #PBS -m abe
@@ -33,9 +33,7 @@ cd $PBS_O_WORKDIR
 EXECUTABLE="./airfoil"                # Your MPI executable
 CORES_PER_JOB=16                      # Cores per job
 # List of AoA subdirectories to process (one job per directory)
-CASE_AOA=( "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20" "21" "22" "23" "24" "25" "26" "27" "28" )
-
-
+CASE_AOA=( "8" "10" "20" "28" )
 LOG_DIR="${PBS_O_WORKDIR}/airfoil_logs_${PBS_JOBID}"
 mkdir -p "$LOG_DIR"
 
@@ -61,7 +59,6 @@ run_airfoil_job() {
 
     # Full path to the parameter file
     param_file="${PBS_O_WORKDIR}/xmlFiles/parameters_${case_aoa}.xml"
-    param_file_porous = "${PBS_O_WORKDIR}/xmlFiles/parameters_${case_aoa}_porous.xml"
 
     # Check if parameter file exists
     if [ ! -f "$param_file" ]; then
@@ -76,9 +73,6 @@ run_airfoil_job() {
 
     # Run your MPI executable from the root folder
     mpirun -np $CORES_PER_JOB "$EXECUTABLE" "$param_file" >> "${LOG_DIR}/job_${case_aoa}.log" 2>&1
-    exit_code=$?
-
-    mpirun -np $CORES_PER_JOB "$EXECUTABLE" "$param_file_porous" >> "${LOG_DIR}/job_${case_aoa}_porous.log" 
     exit_code=$?
 
     echo "========================================" >> "${LOG_DIR}/job_${case_aoa}.log"
