@@ -37,12 +37,10 @@
 #include <iostream>
 #include <vector>
 
-#include "cylinder.h"
-#include "cylinder.hh"
+
 #include "palabos2D.h"
 #include "palabos2D.hh"
-#include "poiseuille.h"
-#include "poiseuille.hh"
+
 #ifdef HDF5
 #include "io/xdmfDataOutput.h"
 #include "io/xdmfDataOutput.hh"
