@@ -1,0 +1,309 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with`a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{dirtree}
+\usepackage{listings}
+\usepackage{xcolor} % For colors
+\usepackage{minted}
+\date{January, 2026}
+\lstdefinelanguage{XML}{
+  basicstyle=\ttfamily\small,
+  morestring=[s]{"}{"},
+  moredelim=[s][\bfseries\color{blue}]{<}{\ },
+  moredelim=[s][\bfseries\color{blue}]{</}{>},
+  moredelim=[l][\bfseries\color{red}]{>},
+  moredelim=[l][\bfseries\color{green}]{/},
+  moredelim=[l][\bfseries\color{orange}]{=},
+  stringstyle=\color{purple},
+  identifierstyle=\color{black},
+}
+
+\title{Documentation for the use of Palabos}
+\author{Gabriel Rochette}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This is a documentation for the use of the modified version of Palabos I have developed during my 2025/2026 internship. It contains practical information as to:
+\begin{enumerate}
+    \item The architecture of the folder.
+    \item The different modification of interest I have made.
+    \item How to run the code.
+    \item How to deploy it on cluster.
+    \item Different notions concerning unit conversion.
+\end{enumerate}
+\end{abstract}
+
+\section{Introduction}
+
+This software is a slightly modified version of Palabos. The key modifications include:
+\begin{enumerate}
+    \item Addind pressure computation at the Lattice level.
+    \item Adding HDF5 output writing for 2D problems.
+    \item Changing the way boolean masks are read.
+\end{enumerate}
+The other modifications applied do not concern the code itself but rather its use: 
+\begin{enumerate}
+    \item Adding the reading of input files to allow the user to configure most of the problem easily without having to dive into the C++ code.
+    \item Arranging the folder organisation to facilitate reading and access.
+    \item Writing additional Python files to automize the process of geometry generation for AoA sweep.
+    \item Preparing batch submission script for the Delta 2 cluster.
+\end{enumerate}
+
+\section{The Architecture of the folder}
+
+Everything happens in the 'airfoil' subfolder. 
+There, you can find three main folders.
+The \textbf{geometry} folder contains: 
+\begin{enumerate}
+    \item .dat files containing NACA shapes, obtained directly from the NACA website. It was copy/pasted from the corresponding area of the website, and \textbf{not downloaded}. Indeed, the python code generating the geometry will create a polynomial shape by connecting each point in \emph{the order they appear}, meaning it's particularly important to ensure the .dat file stores point in the correct order. To ensure the polynomial shape is correctly closed, the first point of the shape is manually added at the very end of the list (which effectively closes the loop).
+    \item The 'geometryGenerator.py' script. This is where the user can generate the geometry and xml files of interest by: 
+    \begin{enumerate}
+        \item Specifying the dimension of the domain: \textit{scale\textunderscore{x}} and \textit{scale\textunderscore{y}} correspond to the number of chord length along the x and y direction (by default the shape defined in the .dat file will be scaled to occupy one chord length along the x direction).
+        \item Specifying the lattice resolution: \textit{lattice\textunderscore{resolution}} corresponds to the number of lattices per chord length (by default 150).
+        \item Specifying the .Dat file of interest (to define the geometry through the polynomial shape).
+        \item Specifying the AoA range of interest.
+        \item Specifying the porosity parameters (number of pores, spacing, relative angle...).
+        \item Specifying \textit{maxT} (total number of physical seconds of the simulation), \textit{vtkSave} (the time in physical units between two consecutive vtk saves) and \textit{imSave} (the time in physical units between two consecutive gif saves).
+    \end{enumerate}
+    Note that at this point an angle sweep on the porosity relative angle is not yet implemented. Also, for a domain of size $N\times{M}$, Palabos require inputing a domain of size $(N+1)\times{(M+1)}$, hence the padding at the end of the code. This effect is accounted for in the main simulation code.
+    
+     \item The 'palabosGeometryViewer.py', which is aimed at checking the .dat files generated work properly by reproducing the exact steps palabos uses to read a .dat file and plotting them for human visualisation. You can use this to ensure you have properly created the geometry files. The user has to manually input the same data as previosuly when defining the domain size and resolution (\textit{scale\textunderscore{x}}, \textit{scale\textunderscore{y}}, and  \textit{lattice\textunderscore{resolution}}).
+     
+\end{enumerate}
+Most of the fun happens in the \textbf{main} folder. The architecture is as such:
+\dirtree{%
+.1 main/.
+.2 build/.
+.2 geometry/.
+.3 geometry\textunderscore{AoA}.dat.
+.2 Results/.
+.3 {AoA}/.
+.2 test/.
+.2 tmp/.
+.2 xmlFiles.
+.3 parameters\textunderscore{AoA}.xml.
+.2 airfoil (executable). 
+.2 airfoil.cpp.
+.2 other files.
+}
+
+Where all references to 'AoA' have to be understood as loops on AoA values specified in the earlier phase. 
+Lets's break it down.
+\begin{itemize}
+    \item The build/ folder contains the files used for building the executable. We will dive into more detail in further section, but basically, this is were the cmake and make command will take place, \textbf{resulting in the creation of the 'arifoil' executable from the 'airfoil.cpp' code}.
+    \item The geometry/ folder contains all the .dat file, identified per AoA, that will be called in the batch script. Their paths are stored in the parameters\textunderscore AoA.xml file of corresponding AoA, and do not have to be manipulated at any point other after having been generated by the previously mentioned python code and dropped manually in this folder.
+    \item The Results/ folder contains subfolders identified by angle of attack (or any custom names you might use). The xml parameter file also contains information to locate these folders, and the code will automatically save simulation results there.
+    \item The test/ and temp/ folders are simply there for development purposes in case you want to modify the code. You can use the test/ folder to store test data, and the temp/ folder to store test results.
+    \item The xmlFiles/ folder is where the parameter files are stored. The C++ code takes an xml file as input, and does not need any additional information. You can find example architecture in appendix \ref{app:xml}. It contains: the relative path from the executable to the geometry of interest, the lattice resolution (named 'N'), and the scale x and scale y parameters (named 'lx' and 'ly'), the different values regarding the time of simulation and the time between different savings, and the location of the result folder. Passing this as input, the code will automatically adapt the domain size of interest, find the correct result folder, and read the correct geometry from the specified location. The generation of these xml files has been automated, as discussed previously.
+    \item Additionally , some other files are present, such as bash scripts automating the cmake and make commands to gain a bit of time when toying with the main C++ code and recompiling.
+\end{itemize}
+
+\section{Modifications of interest}
+
+As explained, I have spent a bit of time modifying both the source code and the main executable to produce an easy to use 2D solver for CFD problems. I will not dive into the details of the source code I have modified, but simply explain what new features have been added for you to use.
+
+\begin{itemize}
+    \item When using a 2D lattice, it is now possible to call the 'computePressure' function to retrieve the pressure on the overall lattice for post-processing purposes. 
+    \item It is now possible to easily write HDF5 output files for 2D lattices by using the canonical syntax of palabos, simply using the 'ParallelXmdfDataWriter2D' class instead of the 3D equivalent.
+\end{itemize}
+
+Additionally to these two new features, I have also modified the way Palabos uses boolean masks. Initially, Palabos' documentation points out to a specific way of defining geometry from boolean masks. However, this specified way only supports the most straightforward dynamics (classical bounce backs etc.) and does not work with momentum exchange. I have written a new way of importing a boolean mask as a MaskShapeDomain2D (the most generic class in Palabos that works with any dynamic), by defining a constructor from the boolean mask directly. The comparison of Palabos' classical method with mine is presented in appendix \ref{app:bool}.
+
+Other modifications such as adding parameter reading, using MRT etc. are somewhat painstaking to implement but straightforward. Once implemented they do not have to be modified, so explaining the procedure is out of the scope of this documentation.
+
+The overall modifications or additions I have made have been mentioned in the folder architecture section, and will be detailed in the next one.
+
+\section{Running the code}
+
+Here is a detailed procedure to run the code on your machine.
+I am using WSL, version:  Ubuntu 24.04.3 LTS (GNU/Linux 6.6.87.2-microsoft-standard-WSL2 x86\textunderscore64).
+
+\begin{enumerate}
+    \item Go to your folder of interest. Run 'git clone https://github.com/GabrielRCS/Cranfield-Porous-Airfoil.git'
+    \item Move to './airfoil/geometry/'
+    \item There, open python files of interest and fill in the values you are interested in for the geometry and the simulation parameters (iterations etc.).
+    \item Run the python script for the geometry and xml files, and move them to the geometry and xmlFiles folders in the './airfoil/main/' folder. You can erase any existing files if they do not have any interest for you.
+    \item Go to the './airfoil/main/'
+    \item Go to the Results/ folder, and create the appropriate result folder based on the angle of attack you used in your xml file. Go back to the main/ folder.
+    \item Remove the airfoil executable, \textbf{not the airfoil.cpp file}! You will have to recompile it with your versions of the different modules.
+    \item Move to the './build' folder. Remove any file present there, and run 'cmake ..'. Download additional modules if prompted, such as OpenMPI, HDF5 writing modules, or any other module that could be hindering the compilation. Once it is complete, run the 'make' command ('make -j' if you want to use parallel compilation for significant gain in time). This will recreate the executable with the correct module versions.
+    \item Move back to the main folder. Now, you can simply run 'mpirun -np \{\#of mpi process\} airfoil \{your parameters.xml File\}
+    \item The code will write results in the AoA folder corresponding to your input. You will find gifs written at different iterations (that you can easily convert to a longer animation using linux's 'convert' function), one vti file containing pressure, density, vorticity and different informations on velocity, saved at the iterations you chose in the previous steps. You will also find two text files containing the Drag and Lift coefficients saved at the iterations you chose. 
+\end{enumerate}
+
+\section{Example use case}
+
+Follow these steps to run an example.
+
+\begin{enumerate}
+    \item git clone https://github.com/GabrielRCS/Cranfield-Porous-Airfoil.git
+    \item cd ./Cranfield-Porous-Airfoil/airfoil/main/
+    \item rm airfoil
+    \item rm -rf build/
+    \item mkdir build/
+    \item cd build/
+    \item cmake ..
+    \item make -j
+    \item cd ..
+    \item cd ./Results/
+    \item mkdir 0
+    \item cd ..
+    \item mpirun -np 12 airfoil ./xmlFiles/parameters\textunderscore 0.xml
+\end{enumerate}
+
+The code will now execute. 
+You can visualize results by going into ./Results/0/ and looking into the various files of interest.
+
+\section{Deploying the code on Cranfield's Delta 2 cluster}
+Deploying the code works exactly as previously, with one exception: you have to manually load the modules in your environement to properly compile the airfoil executable so that the batch submission can work on the machines. 
+
+Here are the list of modules you'll have to load in your environment before recompiling (cmake and make steps):
+\begin{enumerate}
+    \item gompi/2021a
+    \item DHF5/1.10.7-gompi-2021a
+    \item ImageMagick/7.10.0-4-GCCore-11.2.0
+    \item GCCcore/12.2.0
+    \item CMake/3.24.3-GCCcore-12.2.0
+\end{enumerate}
+
+Upon loading these modules, recompile the executable properly on the cluster's environment, and the batch submission will work. 
+You can find a script example of a batch job submission in the ./Cranfield-Porous-Airfoil/airfoil/ folder. 
+
+\section{Some mathematical notions for postprocessing}
+
+One has to bear in mind that LBM manipulates only values in Lattice Units. Therefore, any sucessful post-processing of those values will have to implement proper unit conversions.
+Here is the list of conversions to implement, with the "real" subscript denoting values expressed in SI units, while "lattice" refers to values extracted from the code, in "lattice" units.
+
+\begin{itemize}
+    \item $\rho_{real} = \rho_{lattice}$ (the very nature of the LBM method preserves correct values for density. The subscript is dropped in further equations) 
+    \item $t_{real} = t_{lattice}*dt$ (lattice time is the number of iteration)
+    \item $u_{real} = u_{lattice} \times \frac{dx}{dt}$ (dx is the distance between two lattices, and with the current code, one has $dx=dy$)
+    \item When running the getInternalStatistics.getSum from Palabos, we obtain a value corresponding to the sum of all the momentum exchanged by the fluid during the previous iteration of time dt. It thus corresponds to the variation of its momentum during this iteration. We have: $internal\textunderscore{statistics} = \Delta p_{lattice} = \rho \Delta u_{lattice}$ (indeed, this value sums all momentum variation calculated on each cell from the variation of the particle speed, times local density). Thus, we have: $internal\textunderscore{statistics} = \frac{m}{dx^2.dz} \times \frac{dt}{dx} \times \Delta u_{real}$ (by keeping in mind that $dx=dy$), and thus, by using $F_{real} = m\times \frac{\Delta u_{real}}{dt}$: $$internal\textunderscore{statistics} = F_{real} \times \frac{dt^2}{dx^3.dz}$$
+    \item We can simply the previous formula. As we are working in 2D, we take $dz=1$. This yields: $F_{real} =internal\textunderscore{statistics} \times \frac{dx^3}{dt^2}$
+    \item Then, it follows from the definition of Lift / Drag coefficients that: $$C = 2\frac{F_{real}}{\rho S u_{real, ref}^2} = 2\frac{internal\textunderscore{statistics}}{\rho S u_{real, ref}^2}\times \frac{dx^3}{dt^2}$$ This yields the correct correction factor to apply to the internal statistics sum information (after projection in y/x for Lift/Drag coefficients), $\frac{dx^3}{dt^2}$, to correct the value obtained. One still has tu use correct reference values for the speed and surface (in real units). Note that this correction is already applied in the code, so you needn't modify it (unless you change reference speed or area), but you might be interested in where this comes from in case you want to add aditional post-processing and require similar reasoning.
+\end{itemize}
+
+One final thing to note concerns Lift and Drag coefficients. To calculate them, it is recommended to average on the values from the last iterations to discard the early period of the simulation, which captures the transition part. 
+
+\newpage
+\appendix
+
+
+\section{Typical architecture for XML files} \label{app:xml}
+Example for the file parameters\textunderscore0.xml:
+\begin{minted}{xml}
+<root>
+    <location>./geometry/geometry_0.dat</location>
+    <ResultFile>Test</ResultFile>
+    <N>150</N>
+    <lx>16</lx>
+    <ly>8</ly>
+    <maxT>20.1</maxT>
+    <vtkSave>20</vtkSave>
+    <imSave>0.5</imSave>
+</root>
+\end{minted}
+
+\section{Different ways to import a geometry from a boolean mask} \label{app:bool}
+
+\subsection{Inherent Palabos Method}
+The native method from the Palabos documentation (or example codes) loads a boolean mask as follows: 
+\begin{minted}{cpp}
+MultiScalarField2D<T> boolMask(nx, ny);
+plb_ifstream ifile("geometry.dat");
+ifile >> boolMask;
+
+defineDynamics(lattice, boolMask, new BounceBack<T,DESCRIPTOR>, true);
+\end{minted}
+This method works perfectly fine for classical bounce back mechanics. However, for our problem, we need the use of the momentum exchange bounce back. Since Palabos does not allow the use of this dynamic on objects of type `MultiScalarField2D`, it was important to figure a way to define a geometry from a boolean mask with the generic type for palabos fields: `MaskShapeDomain2D`.
+
+\subsection{Custom class definition}
+Some examples show definitions of `MaskShapeDomain2D` from boolean functions (example: a cylinder from the condition $x^2+y^2<r^2$). Therefore, it was decided to mimick this behavior by turning the boolean mask into a boolean function, returning 'True' if the (x,y) point corresponds to a 1 in the boolean mask, 0 otherwise. This led to the use of the custom class defined as such:
+\begin{minted}{cpp}
+// Class to define a domain from a native 2D boolean mask
+template <typename T>
+class MaskShapeDomain2D : public DomainFunctional2D {
+public:
+    // Constructor: takes a native 2D mask (vector of vector of bool)
+    MaskShapeDomain2D(const std::vector<std::vector<bool>>& mask_)
+        : mask(mask_)
+    { }
+
+    // operator(): returns true if the mask is active at a given lattice index 
+    virtual bool operator()(plint iX, plint iY) const override
+    {
+        if (iY >= 0 && iY < static_cast<plint>(mask.size()) &&
+            iX >= 0 && iX < static_cast<plint>(mask[iY].size()))
+        {
+            // This is the boolean function
+            return mask[iY][iX];
+        }
+        return false; // out of bounds thus inactive
+    }
+
+    // clone() required by Palabos
+    virtual MaskShapeDomain2D<T>* clone() const override
+    {
+        return new MaskShapeDomain2D<T>(*this);
+    }
+
+private:
+    std::vector<std::vector<bool>> mask;
+};
+\end{minted}
+
+One important thing to note is that the boolean mask is imported as `std::vector\textless std::vector\textless bool\textgreater\textgreater`, and not as a standard Palabos type (like `MultiScalarField2D\textless T\textgreater`). Indeed, it was particularly important to ensure the code could still be parallelized. Palabos uses a distributed memory architecture (with MPI passing), so initial data has to be split accross different processes. Since Palabos' native types cannot be easily split, the use of native C++ types such as vectors of vectors was the only way to preserve the code's ability to separate data and remain parallelizable.
+
+We can now define the geometry properly:
+
+\begin{minted}{cpp}
+// Define the mask 
+MultiScalarField2D<bool> boolMaskPLB(nx, ny);
+plb_ifstream ifile(geometryLocation.c_str());
+ifile >> boolMaskPLB;
+
+// Convert to native 2D mask
+std::vector<std::vector<bool>> boolMask(ny, std::vector<bool>(nx));
+for (plint y = 0; y < ny; ++y)
+    for (plint x = 0; x < nx; ++x)
+        boolMask[y][x] = boolMaskPLB.get(x, y);
+
+defineDynamics(
+    lattice, lattice.getBoundingBox(), new MaskShapeDomain2D<T>(boolMask),
+    new MomentumExchangeBounceBack<T, DESCRIPTOR>(forceIds));
+initializeMomentumExchange(
+    lattice, lattice.getBoundingBox(), new MaskShapeDomain2D<T>(boolMask));
+\end{minted}
+
+\section{Modifying the different parameters linked to iterations}
+
+To modify the total number of iterations, or the iterations at which you wish to save the different fields of interest, go to this section:
+
+\begin{minted}{cpp}
+#ifndef PLB_REGRESSION
+const T imSave = (T)0.5;
+const T vtkSave = (T)20.; // Save VTK files every 20 time units
+const T maxT = (T)400.1; // Total simulation time: 4e4 lattice time units, to match Illio
+\end{minted}
+
+And modify:
+\begin{itemize}
+    \item maxT for the total number of iterations (note that the value set is the number of seconds, it will be divided by dt to determine the number of iterations).
+    \item imSave for the number of seconds (simulation time) between two gif saves.
+    \item vtkSave for the number of seconds (simulation time) between two vtk saves.
+\end{itemize}
+\end{document}
